@@ -42,8 +42,6 @@ char *LISTEN_ADDR = { "0.0.0.0" };
 FILE *LOG_FILE;
 char *RESOLVCONF = "resolv.conf";
 char *LOGFILE = "/dev/null";
-char *USERNAME = "nobody";
-char *GROUPNAME = "nobody";
 int NUM_DNS = 0;
 int LOG = 0;
 char **dns_servers;
@@ -98,10 +96,6 @@ void parse_config(char *file) {
       LISTEN_ADDR = string_value(get_value(line));
     else if(strstr(line, "listen_port") != NULL)
       LISTEN_PORT = strtol(get_value(line), NULL, 10);
-    else if(strstr(line, "set_user") != NULL)
-      USERNAME = string_value(get_value(line));
-    else if(strstr(line, "set_group") != NULL)
-      GROUPNAME = string_value(get_value(line));
     else if(strstr(line, "resolv_conf") != NULL)
       RESOLVCONF = string_value(get_value(line));
     else if(strstr(line, "log_file") != NULL)
@@ -230,8 +224,6 @@ int udp_listener() {
   if(fork() != 0) { exit(0); }
   if(fork() != 0) { exit(0); }
 
-  setuid(getpwnam(USERNAME)->pw_uid);
-  setgid(getgrnam(GROUPNAME)->gr_gid);
   socklen_t dns_client_size = sizeof(struct sockaddr_in);
 
   // setup SIGCHLD handler to kill off zombie children
@@ -320,18 +312,8 @@ int main(int argc, char *argv[]) {
 
   printf("[*] Listening on: %s:%d\n", LISTEN_ADDR, LISTEN_PORT);
   printf("[*] Using SOCKS proxy: %s:%d\n", SOCKS_ADDR, SOCKS_PORT);
-  printf("[*] Will drop priviledges to %s:%s\n", USERNAME, GROUPNAME);
   parse_resolv_conf();
   printf("[*] Loaded %d DNS servers from %s.\n\n", NUM_DNS, RESOLVCONF);
-
-  if (!getpwnam(USERNAME)) {
-    printf("[!] Username (%s) does not exist! Quiting\n", USERNAME);
-    exit(1);
-  }
-  if (!getgrnam(GROUPNAME)) {
-    printf("[!] Group (%s) does not exist! Quiting\n", GROUPNAME);
-    exit(1);
-  }
 
   // start the dns proxy
   udp_listener();
