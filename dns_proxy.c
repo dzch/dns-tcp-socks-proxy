@@ -42,6 +42,7 @@ char *LISTEN_ADDR = { "0.0.0.0" };
 FILE *LOG_FILE;
 char *RESOLVCONF = "resolv.conf";
 char *LOGFILE = "/dev/null";
+char *DAEMON= "off";
 int NUM_DNS = 0;
 int LOG = 0;
 char **dns_servers;
@@ -100,6 +101,8 @@ void parse_config(char *file) {
       RESOLVCONF = string_value(get_value(line));
     else if(strstr(line, "log_file") != NULL)
       LOGFILE = string_value(get_value(line));
+    else if(strstr(line, "daemon") != NULL)
+      DAEMON = string_value(get_value(line));
   }
   if (fclose(f) != 0)
 	  error("[!] Error closing configuration file");
@@ -220,9 +223,11 @@ int udp_listener() {
 
   printf("[*] No errors, backgrounding process.\n");
 
-  // daemonize the process.
-  if(fork() != 0) { exit(0); }
-  if(fork() != 0) { exit(0); }
+  if (strcmp(DAEMON, "on") == 0) {
+      // daemonize the process.
+      if(fork() != 0) { exit(0); }
+      if(fork() != 0) { exit(0); }
+  }
 
   socklen_t dns_client_size = sizeof(struct sockaddr_in);
 
@@ -283,8 +288,6 @@ int main(int argc, char *argv[]) {
       printf("   * socks_port  -- socks listener port\n");
       printf("   * listen_addr -- address for the dns proxy to listen on\n");
       printf("   * listen_port -- port for the dns proxy to listen on (most cases 53)\n");
-      printf("   * set_user    -- username to drop to after binding\n");
-      printf("   * set_group   -- group to drop to after binding\n");
       printf("   * resolv_conf -- location of resolv.conf to read from\n");
       printf("   * log_file    -- location to log server IPs to. (only necessary for debugging)\n\n");
       printf(" * Configuration directives should be of the format:\n");
@@ -294,8 +297,6 @@ int main(int argc, char *argv[]) {
       printf("   * socks_port   = 9050\n");
       printf("   * listen_addr  = 0.0.0.0\n");
       printf("   * listen_port  = 53\n");
-      printf("   * set_user     = nobody\n");
-      printf("   * set_group    = nobody\n");
       printf("   * resolv_conf  = resolv.conf\n");
       printf("   * log_file     = /dev/null\n");
       exit(0);
