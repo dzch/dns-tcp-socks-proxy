@@ -209,13 +209,13 @@ int udp_listener() {
   if(bind(sock, (struct sockaddr*)&dns_listener, sizeof(dns_listener)) < 0)
     error("[!] Error binding on dns proxy");
 
-  FILE *resolv = fopen("/etc/resolv.conf", "w");
-
-  if (!resolv)
-    error("[!] Error opening /etc/resolv.conf");
-
-  fprintf(resolv, "nameserver %s\n", LISTEN_ADDR);
-  fclose(resolv);
+//  FILE *resolv = fopen("/etc/resolv.conf", "w");
+//
+//  if (!resolv)
+//    error("[!] Error opening /etc/resolv.conf");
+//
+//  fprintf(resolv, "nameserver %s\n", LISTEN_ADDR);
+//  fclose(resolv);
 
   if (strcmp(LOGFILE, "/dev/null") != 0) {
     LOG      = 1;
@@ -313,10 +313,10 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (getuid() != 0) {
-    printf("Error: this program must be run as root! Quitting\n");
-    exit(1);
-  }
+//  if (getuid() != 0) {
+//    printf("Error: this program must be run as root! Quitting\n");
+//    exit(1);
+//  }
 
   printf("[*] Listening on: %s:%d\n", LISTEN_ADDR, LISTEN_PORT);
   printf("[*] Using SOCKS proxy: %s:%d\n", SOCKS_ADDR, SOCKS_PORT);
