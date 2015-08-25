@@ -24,8 +24,6 @@ The configuration file should contain any of the following options (and ignores 
 * socks_port  -- socks listener port
 * listen_addr -- address for the dns proxy to listen on
 * listen_port -- port for the dns proxy to listen on (most cases 53)
-* set_user    -- username to drop to after binding
-* set_group   -- group to drop to after binding
 * resolv_conf -- location of resolv.conf file to read from
 * log_file    -- location to log to (should be /dev/null unless debugging).
 
@@ -35,8 +33,6 @@ Any non-specified options will be set to their defaults:
 * socks_port  = 9050
 * listen_addr = 0.0.0.0
 * listen_port = 53
-* set_user    = nobody
-* set_group   = nobody
 * resolv_conf = resolv.conf
 * log_file    = /dev/null
 
